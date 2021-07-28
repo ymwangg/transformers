@@ -22,7 +22,7 @@ import timeit
 from typing import Callable, Optional
 
 from ..configuration_utils import PretrainedConfig
-from ..file_utils import is_py3nvml_available, is_torch_available
+from ..file_utils import is_py3nvml_available, is_torch_available, is_torch_tpu_available
 from ..models.auto.modeling_auto import MODEL_MAPPING, MODEL_WITH_LM_HEAD_MAPPING
 from ..utils import logging
 from .benchmark_utils import (
@@ -40,6 +40,8 @@ if is_torch_available():
 
     from .benchmark_args import PyTorchBenchmarkArguments
 
+if is_torch_tpu_available():
+    import torch_xla.core.xla_model as xm
 
 if is_py3nvml_available():
     import py3nvml.py3nvml as nvml
@@ -111,7 +113,7 @@ class PyTorchBenchmark(Benchmark):
 
         if self.args.fp16:
             logger.info("Running training in Mixed Precision...")
-            assert self.args.is_gpu, "Mixed precision is possible only for GPU."
+            #assert self.args.is_gpu, "Mixed precision is possible only for GPU."
             # amp seems to have memory leaks so that memory usage
             # is measured using .half() for now https://github.com/NVIDIA/apex/issues/439
             model.half()
@@ -170,7 +172,7 @@ class PyTorchBenchmark(Benchmark):
 
         if self.args.fp16:
             logger.info("Running training in Mixed Precision...")
-            assert self.args.is_gpu, "Mixed precision is possible only for GPU."
+            #assert self.args.is_gpu, "Mixed precision is possible only for GPU."
 
             # amp seems to have memory leaks so that memory usage
             # is measured using .half() for now https://github.com/NVIDIA/apex/issues/439
@@ -179,11 +181,15 @@ class PyTorchBenchmark(Benchmark):
         def compute_loss_and_backprob_encoder():
             loss = train_model(input_ids, labels=input_ids)[0]
             loss.backward()
+            if is_torch_tpu_available():
+                xm.mark_step()
             return loss
 
         def compute_loss_and_backprob_encoder_decoder():
             loss = train_model(input_ids, decoder_input_ids=input_ids, labels=input_ids)[0]
             loss.backward()
+            if is_torch_tpu_available():
+                xm.mark_step()
             return loss
 
         _train = (
