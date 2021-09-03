@@ -161,7 +161,12 @@ class PyTorchBenchmark(Benchmark):
         if self.args.torchscript:
             raise NotImplementedError("Training for torchscript is currently not implemented")
         else:
-            train_model = model
+            # train_model = model
+            from .model_wrapper import ModelSerializer
+            train_model = ModelSerializer(
+                model,
+                f"{model_name}_{'xla' if self.args.is_tpu else 'native'}.pickle"
+            )
 
         model.train()
         model.to(self.args.device)
