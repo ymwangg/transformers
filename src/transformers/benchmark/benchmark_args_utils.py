@@ -66,6 +66,9 @@ class BenchmarkArguments:
     tpu: bool = field(
         default=True, metadata={"help": "Whether to run on available tpu devices. TPU can be disabled via --no-tpu."}
     )
+    dump_loss: bool = field(
+        default=False, metadata={"help": "Whether to dump loss values on each iteration. Negatively affects XLA performance when enabled"}
+    )
     fp16: bool = field(default=False, metadata={"help": "Use FP16 to accelerate inference."})
     training: bool = field(default=False, metadata={"help": "Benchmark training of model"})
     verbose: bool = field(default=False, metadata={"help": "Verbose memory tracing"})
