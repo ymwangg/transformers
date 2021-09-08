@@ -72,10 +72,11 @@ class SerCompare:
             return pickle.load(f)
 
     def validate(self):
+        logging.debug("Native : XLA")
         minlen = min(len(self.xla_losses), len(self.native_losses))
         passed = True
         for it, (xla_out, native_out) in enumerate(zip(self.xla_losses[:minlen], self.native_losses[:minlen])):
-            logging.debug(abs((native_out-xla_out) / native_out))
+            logging.debug(f"{native_out} : {xla_out}")
             # Increase relative error threshold linearly every 5 iterations
             # TODO: Exponential increases may be more appropriate to match
             #   propagation of precision loss

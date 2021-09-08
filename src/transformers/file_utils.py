@@ -329,6 +329,7 @@ def is_flax_available():
     return _flax_available
 
 
+_use_torch_tpu = True
 def is_torch_tpu_available():
     if not _torch_available:
         return False
@@ -337,7 +338,7 @@ def is_torch_tpu_available():
         return False
     if importlib.util.find_spec("torch_xla.core") is None:
         return False
-    return importlib.util.find_spec("torch_xla.core.xla_model") is not None
+    return importlib.util.find_spec("torch_xla.core.xla_model") is not None and _use_torch_tpu
 
 
 def is_datasets_available():

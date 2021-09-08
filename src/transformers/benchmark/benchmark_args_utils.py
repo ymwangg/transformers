@@ -121,6 +121,10 @@ class BenchmarkArguments:
         },
     )
 
+    def __post_init__(self):
+        from .. import file_utils
+        file_utils._use_torch_tpu = self.is_tpu
+
     def to_json_string(self):
         """
         Serializes this instance to a JSON string.

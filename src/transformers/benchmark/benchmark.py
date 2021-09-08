@@ -138,6 +138,7 @@ class PyTorchBenchmark(Benchmark):
         return _forward
 
     def _prepare_train_func(self, model_name: str, batch_size: int, sequence_length: int) -> Callable[[], None]:
+        torch.manual_seed(0)
         config = self.config_dict[model_name]
 
         has_model_class_in_config = (
@@ -161,12 +162,14 @@ class PyTorchBenchmark(Benchmark):
         if self.args.torchscript:
             raise NotImplementedError("Training for torchscript is currently not implemented")
         else:
-            # train_model = model
-            from .model_wrapper import ModelSerializer
-            train_model = ModelSerializer(
-                model,
-                f"{model_name}_{'xla' if self.args.is_tpu else 'native'}.pickle"
-            )
+            if self.args.dump_loss:
+                from .model_wrapper import ModelSerializer
+                train_model = ModelSerializer(
+                    model,
+                    f"{model_name}_{'xla' if self.args.is_tpu else 'native'}.pickle"
+                )
+            else:
+                train_model = model
 
         model.train()
         model.to(self.args.device)
