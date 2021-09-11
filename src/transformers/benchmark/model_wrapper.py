@@ -12,7 +12,7 @@ CPUDEV = torch.device("cpu")
 class ModelSerializer:
     """Wrapper class around a PT model that records losses after each training iteration and writes them to file
     """
-    def __init__(self, model, fname, num_iterations=20, loss_fn=None):
+    def __init__(self, model, fname, num_iterations=200, loss_fn=None):
         """
         Params:
             model: Underlying PT model
@@ -81,7 +81,7 @@ class SerCompare:
             # TODO: Exponential increases may be more appropriate to match
             #   propagation of precision loss
             if not np.allclose(xla_out, native_out, rtol=((it//5+1)*1e-02), atol=1e-03):
-                print(f"Accuracy check failed on epoch {it}")
+                print(f"Accuracy check failed on iteration {it}")
                 print(f"xla: {xla_out}")
                 print(f"native: {native_out}")
                 print(f"Relative error = {abs((native_out-xla_out) / native_out)}")

@@ -739,7 +739,7 @@ class Benchmark(ABC):
 
         if self.args.training:
             if self.args.speed:
-                self.print_fn("\n" + 20 * "=" + ("TRAIN - SPEED - RESULTS").center(40) + 20 * "=")
+                # self.print_fn("\n" + 20 * "=" + ("TRAIN - SPEED - RESULTS").center(40) + 20 * "=")
                 self.print_results(train_result_time, "Time in s")
                 self.save_to_csv(train_result_time, self.args.train_time_csv_file)
                 if self.args.is_tpu:
@@ -835,11 +835,11 @@ class Benchmark(ABC):
         return self._environment_info
 
     def print_results(self, result_dict, type_label):
-        self.print_fn(100 * "-")
-        self.print_fn(
-            "Model Name".center(30) + "Device".center(15) + "Batch Size".center(15) + "Seq Length".center(15) + type_label.center(15)
-        )
-        self.print_fn(100 * "-")
+        # self.print_fn(100 * "-")
+        # self.print_fn(
+        #     "Model Name".center(30) + "Device".center(15) + "Batch Size".center(15) + "Seq Length".center(15) + type_label.center(15)
+        # )
+        # self.print_fn(100 * "-")
         for model_name in self.args.model_names:
             for batch_size in result_dict[model_name]["bs"]:
                 for sequence_length in result_dict[model_name]["ss"]:
@@ -849,12 +849,16 @@ class Benchmark(ABC):
                         result = "< 0.001" if result == 0.0 else str(result)
                     else:
                         result = str(result)
+                    # self.print_fn(
+                    #     model_name[:30].center(30) + str(self.args.device).center(15) + str(batch_size).center(15),
+                    #     str(sequence_length).center(15),
+                    #     result.center(15),
+                    # )
                     self.print_fn(
-                        model_name[:30].center(30) + str(self.args.device).center(15) + str(batch_size).center(15),
-                        str(sequence_length).center(15),
-                        result.center(15),
+                        f"Results: {model_name[:30]} {str(self.args.device)} "
+                        f"{str(batch_size)} {str(sequence_length)} {result}"
                     )
-        self.print_fn(100 * "-")
+        # self.print_fn(100 * "-")
 
     def print_memory_trace_statistics(self, summary: MemorySummary):
         self.print_fn(
