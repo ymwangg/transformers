@@ -854,9 +854,11 @@ class Benchmark(ABC):
                     #     str(sequence_length).center(15),
                     #     result.center(15),
                     # )
+                    if model_name.endswith(".json"):
+                        model_name = model_name.split("/")[-1]
                     self.print_fn(
                         f"Results: {model_name[:30]} {str(self.args.device)} "
-                        f"{str(batch_size)} {str(sequence_length)} {result}"
+                        f"{str(batch_size)} {str(sequence_length)} {result}\n"
                     )
         # self.print_fn(100 * "-")
 
