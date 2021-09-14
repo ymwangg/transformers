@@ -197,6 +197,8 @@ class PyTorchBenchmark(Benchmark):
                     xm.all_reduce("sum", gradients, scale=1.0 / xm.xrt_world_size())
                 scaler.step(optimizer)
                 scaler.update()
+                if self.args.is_tpu:
+                    xm.mark_step()
                 return loss
             else:
                 loss = train_model(input_ids, labels=input_ids)[0]
@@ -219,6 +221,8 @@ class PyTorchBenchmark(Benchmark):
                     xm.all_reduce("sum", gradients, scale=1.0 / xm.xrt_world_size())
                 scaler.step(optimizer)
                 scaler.update()
+                if self.args.is_tpu:
+                    xm.mark_step()
                 return loss
             else:
                 loss = train_model(input_ids, decoder_input_ids=input_ids, labels=input_ids)[0]
