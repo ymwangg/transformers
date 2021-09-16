@@ -841,7 +841,6 @@ class Benchmark(ABC):
         # )
         # self.print_fn(100 * "-")
         device = 'xla' if self.args.is_tpu else 'gpu'
-        print(f'============= {self.args.is_tpu} ==================')
         for model_name in self.args.model_names:
             for batch_size in result_dict[model_name]["bs"]:
                 for sequence_length in result_dict[model_name]["ss"]:
