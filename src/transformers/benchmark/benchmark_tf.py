@@ -170,7 +170,9 @@ class TensorFlowBenchmark(Benchmark):
         ), "Training cannot be done in eager mode. Please make sure that `args.eager_mode = False`."
 
         if self.args.fp16:
-            raise NotImplementedError("Mixed precision is currently not supported.")
+            # raise NotImplementedError("Mixed precision is currently not supported.")
+            policy = tf.keras.mixed_precision.Policy("mixed_float16")
+            tf.keras.mixed_precision.set_global_policy(policy)
 
         has_model_class_in_config = (
             hasattr(config, "architectures")

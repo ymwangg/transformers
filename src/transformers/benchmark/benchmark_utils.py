@@ -840,6 +840,8 @@ class Benchmark(ABC):
         #     "Model Name".center(30) + "Device".center(15) + "Batch Size".center(15) + "Seq Length".center(15) + type_label.center(15)
         # )
         # self.print_fn(100 * "-")
+        device = 'xla' if self.args.is_tpu else 'gpu'
+        print(f'============= {self.args.is_tpu} ==================')
         for model_name in self.args.model_names:
             for batch_size in result_dict[model_name]["bs"]:
                 for sequence_length in result_dict[model_name]["ss"]:
@@ -857,7 +859,7 @@ class Benchmark(ABC):
                     if model_name.endswith(".json"):
                         model_name = model_name.split("/")[-1]
                     self.print_fn(
-                        f"Results: {model_name[:30]} {str(self.args.device)} "
+                        f"Results: {model_name[:30]} {device} "
                         f"{str(batch_size)} {str(sequence_length)} {result}\n"
                     )
         # self.print_fn(100 * "-")
