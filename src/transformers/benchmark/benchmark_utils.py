@@ -835,12 +835,11 @@ class Benchmark(ABC):
         return self._environment_info
 
     def print_results(self, result_dict, type_label):
-        # self.print_fn(100 * "-")
-        # self.print_fn(
-        #     "Model Name".center(30) + "Device".center(15) + "Batch Size".center(15) + "Seq Length".center(15) + type_label.center(15)
-        # )
-        # self.print_fn(100 * "-")
-        device = 'xla' if self.args.is_tpu else 'gpu'
+        self.print_fn(80 * "-")
+        self.print_fn(
+            "Model Name".center(30) + "Batch Size".center(15) + "Seq Length".center(15) + type_label.center(15)
+        )
+        self.print_fn(80 * "-")
         for model_name in self.args.model_names:
             for batch_size in result_dict[model_name]["bs"]:
                 for sequence_length in result_dict[model_name]["ss"]:
@@ -850,18 +849,12 @@ class Benchmark(ABC):
                         result = "< 0.001" if result == 0.0 else str(result)
                     else:
                         result = str(result)
-                    # self.print_fn(
-                    #     model_name[:30].center(30) + str(self.args.device).center(15) + str(batch_size).center(15),
-                    #     str(sequence_length).center(15),
-                    #     result.center(15),
-                    # )
-                    if model_name.endswith(".json"):
-                        model_name = model_name.split("/")[-1]
                     self.print_fn(
-                        f"Results: {model_name[:30]} {device} "
-                        f"{str(batch_size)} {str(sequence_length)} {result}\n"
+                        model_name[:30].center(30) + str(batch_size).center(15),
+                        str(sequence_length).center(15),
+                        result.center(15),
                     )
-        # self.print_fn(100 * "-")
+        self.print_fn(80 * "-")
 
     def print_memory_trace_statistics(self, summary: MemorySummary):
         self.print_fn(
