@@ -174,13 +174,19 @@ class PyTorchBenchmark(Benchmark):
         model.train()
         model.to(self.args.device)
         from transformers import AdamW
-        optimizer = AdamW(model.parameters(), lr=5e-5)
+        from torch_xla.amp import syncfree
+        from torch.optim import SGD
+        optimizer = SGD(model.parameters(), lr=5e-5) if not self.args.is_tpu else syncfree.SGD(model.parameters(), lr=5e-5, momentum=0.01)
+        # optimizer = AdamW(model.parameters(), lr=5e-5)
         if self.args.fp16:
             if self.args.is_tpu:
                 from torch_xla.amp import autocast, GradScaler
+                from torch_xla.amp import syncfree
+                scaler = syncfree.GradScaler()
+                # scaler = GradScaler()
             else:
                 from torch.cuda.amp import autocast, GradScaler
-            scaler = GradScaler()
+                scaler = GradScaler()
 
         # encoder-decoder has vocab size saved differently
         vocab_size = config.vocab_size if hasattr(config, "vocab_size") else config.encoder.vocab_size
