@@ -123,6 +123,16 @@ class BenchmarkArguments:
             "help": "Instead of loading the model as defined in `config.architectures` if exists, just load the pretrain model weights."
         },
     )
+    optim: str = field(
+        default=f"SGD",
+        metadata={"help": "optimizer to use"},
+    )
+    syncfree: bool = field(
+        default=False,
+        metadata={
+            "help": "If uses syncfree optimizer"
+        },
+    )
 
     def __post_init__(self):
         from .. import file_utils

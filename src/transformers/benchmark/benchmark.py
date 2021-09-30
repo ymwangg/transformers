@@ -20,6 +20,8 @@
 
 import timeit
 from typing import Callable, Optional
+from torch_xla.amp import syncfree
+from torch.optim import SGD, Adam
 
 from ..configuration_utils import PretrainedConfig
 from ..file_utils import is_py3nvml_available, is_torch_available, is_torch_tpu_available
@@ -173,17 +175,23 @@ class PyTorchBenchmark(Benchmark):
 
         model.train()
         model.to(self.args.device)
-        from transformers import AdamW
-        from torch_xla.amp import syncfree
-        from torch.optim import SGD
-        optimizer = SGD(model.parameters(), lr=5e-5) if not self.args.is_tpu else syncfree.SGD(model.parameters(), lr=5e-5, momentum=0.01)
-        # optimizer = AdamW(model.parameters(), lr=5e-5)
+
+        if self.args.is_tpu and self.args.syncfree:
+            optimizer = syncfree.SGD(
+                model.parameters(), lr=5e-5,
+                momentum=0.9) if self.args.optim == "SGD" else syncfree.Adam(
+                    model.parameters(), lr=5e-5)
+        else:
+            optimizer = SGD(
+                model.parameters(), lr=5e-5,
+                momentum=0.9) if self.args.optim == "SGD" else Adam(
+                    model.parameters(), lr=5e-5)
+
         if self.args.fp16:
             if self.args.is_tpu:
                 from torch_xla.amp import autocast, GradScaler
-                from torch_xla.amp import syncfree
-                scaler = syncfree.GradScaler()
-                # scaler = GradScaler()
+                scaler = syncfree.GradScaler(
+                ) if self.args.syncfree else GradScaler()
             else:
                 from torch.cuda.amp import autocast, GradScaler
                 scaler = GradScaler()
