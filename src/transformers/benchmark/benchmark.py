@@ -21,7 +21,7 @@
 import timeit
 from typing import Callable, Optional
 from torch_xla.amp import syncfree
-from torch.optim import SGD, Adam
+from torch import optim
 
 from ..configuration_utils import PretrainedConfig
 from ..file_utils import is_py3nvml_available, is_torch_available, is_torch_tpu_available
@@ -176,16 +176,18 @@ class PyTorchBenchmark(Benchmark):
         model.train()
         model.to(self.args.device)
 
-        if self.args.is_tpu and self.args.syncfree:
-            optimizer = syncfree.SGD(
-                model.parameters(), lr=5e-5,
-                momentum=0.9) if self.args.optim == "SGD" else syncfree.Adam(
-                    model.parameters(), lr=5e-5)
+        use_syncfree = self.args.is_tpu and self.args.syncfree
+        if self.args.optim == "SGD":
+            optim_cls = syncfree.SGD if use_syncfree else optim.SGD
+            optimizer = optim_cls(model.parameters(), lr=5e-5, momentum=0.9)
+        elif self.args.optim == "Adam":
+            optim_cls = syncfree.Adam if use_syncfree else optim.Adam
+            optimizer = optim_cls(model.parameters(), lr=5e-5)
         else:
-            optimizer = SGD(
-                model.parameters(), lr=5e-5,
-                momentum=0.9) if self.args.optim == "SGD" else Adam(
-                    model.parameters(), lr=5e-5)
+            prefix = "torch_xla.amp.syncfree" if use_syncfree else "torch.optim"
+            optim_cls = "{}.{}".format(prefix, self.args.optim)
+            raise NotImplementedError(
+                "{} has not been implemented".format(optim_cls))
 
         if self.args.fp16:
             if self.args.is_tpu:
