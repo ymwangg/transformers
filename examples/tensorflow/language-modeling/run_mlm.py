@@ -57,7 +57,6 @@ from transformers import (
 )
 from transformers.utils.versions import require_version
 
-
 logger = logging.getLogger(__name__)
 require_version("datasets>=1.8.0", "To fix: pip install -r examples/tensorflow/language-modeling/requirements.txt")
 MODEL_CONFIG_CLASSES = list(TF_MODEL_FOR_MASKED_LM_MAPPING.keys())
@@ -203,6 +202,7 @@ class DataTrainingArguments:
 # endregion
 
 
+import time
 # region Helper classes
 class SavePretrainedCallback(tf.keras.callbacks.Callback):
     # Hugging Face models have a save_pretrained() method that saves both the weights and the necessary
@@ -211,10 +211,15 @@ class SavePretrainedCallback(tf.keras.callbacks.Callback):
     def __init__(self, output_dir, **kwargs):
         super().__init__()
         self.output_dir = output_dir
+        self.t = time.time()
 
+    def on_batch_end(self, batch, logs=None):
+        t = time.time()
+        print(" speed={}it/s".format(1/(t-self.t)))
+        self.t = t
     def on_epoch_end(self, epoch, logs=None):
-        self.model.save_pretrained(self.output_dir)
-
+        pass
+        #self.model.save_pretrained(self.output_dir)
 
 # endregion
 
