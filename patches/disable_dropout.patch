@@ -1,0 +1,40 @@
+diff --git a/src/transformers/models/bert/modeling_bert.py b/src/transformers/models/bert/modeling_bert.py
+index 66df84d47..08085979c 100755
+--- a/src/transformers/models/bert/modeling_bert.py
++++ b/src/transformers/models/bert/modeling_bert.py
+@@ -219,7 +219,7 @@ class BertEmbeddings(nn.Module):
+             position_embeddings = self.position_embeddings(position_ids)
+             embeddings += position_embeddings
+         embeddings = self.LayerNorm(embeddings)
+-        embeddings = self.dropout(embeddings)
++        # embeddings = self.dropout(embeddings)
+         return embeddings
+ 
+ 
+@@ -331,7 +331,7 @@ class BertSelfAttention(nn.Module):
+ 
+         # This is actually dropping out entire tokens to attend to, which might
+         # seem a bit unusual, but is taken from the original Transformer paper.
+-        attention_probs = self.dropout(attention_probs)
++        # attention_probs = self.dropout(attention_probs)
+ 
+         # Mask heads if we want to
+         if head_mask is not None:
+@@ -359,7 +359,7 @@ class BertSelfOutput(nn.Module):
+ 
+     def forward(self, hidden_states, input_tensor):
+         hidden_states = self.dense(hidden_states)
+-        hidden_states = self.dropout(hidden_states)
++        # hidden_states = self.dropout(hidden_states)
+         hidden_states = self.LayerNorm(hidden_states + input_tensor)
+         return hidden_states
+ 
+@@ -437,7 +437,7 @@ class BertOutput(nn.Module):
+ 
+     def forward(self, hidden_states, input_tensor):
+         hidden_states = self.dense(hidden_states)
+-        hidden_states = self.dropout(hidden_states)
++        # hidden_states = self.dropout(hidden_states)
+         hidden_states = self.LayerNorm(hidden_states + input_tensor)
+         return hidden_states
+ 

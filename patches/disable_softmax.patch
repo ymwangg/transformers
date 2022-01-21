@@ -1,0 +1,14 @@
+diff --git a/src/transformers/models/bert/modeling_bert.py b/src/transformers/models/bert/modeling_bert.py
+index 66df84d47..35c22d770 100755
+--- a/src/transformers/models/bert/modeling_bert.py
++++ b/src/transformers/models/bert/modeling_bert.py
+@@ -327,7 +327,8 @@ class BertSelfAttention(nn.Module):
+             attention_scores = attention_scores + attention_mask
+ 
+         # Normalize the attention scores to probabilities.
+-        attention_probs = nn.functional.softmax(attention_scores, dim=-1)
++        # attention_probs = nn.functional.softmax(attention_scores, dim=-1)
++        attention_probs = attention_scores
+ 
+         # This is actually dropping out entire tokens to attend to, which might
+         # seem a bit unusual, but is taken from the original Transformer paper.

@@ -1,0 +1,31 @@
+diff --git a/src/transformers/models/bert/modeling_bert.py b/src/transformers/models/bert/modeling_bert.py
+index 66df84d47..5f27b19ae 100755
+--- a/src/transformers/models/bert/modeling_bert.py
++++ b/src/transformers/models/bert/modeling_bert.py
+@@ -218,7 +218,7 @@ class BertEmbeddings(nn.Module):
+         if self.position_embedding_type == "absolute":
+             position_embeddings = self.position_embeddings(position_ids)
+             embeddings += position_embeddings
+-        embeddings = self.LayerNorm(embeddings)
++        # embeddings = self.LayerNorm(embeddings)
+         embeddings = self.dropout(embeddings)
+         return embeddings
+ 
+@@ -360,7 +360,7 @@ class BertSelfOutput(nn.Module):
+     def forward(self, hidden_states, input_tensor):
+         hidden_states = self.dense(hidden_states)
+         hidden_states = self.dropout(hidden_states)
+-        hidden_states = self.LayerNorm(hidden_states + input_tensor)
++        # hidden_states = self.LayerNorm(hidden_states + input_tensor)
+         return hidden_states
+ 
+ 
+@@ -438,7 +438,7 @@ class BertOutput(nn.Module):
+     def forward(self, hidden_states, input_tensor):
+         hidden_states = self.dense(hidden_states)
+         hidden_states = self.dropout(hidden_states)
+-        hidden_states = self.LayerNorm(hidden_states + input_tensor)
++        # hidden_states = self.LayerNorm(hidden_states + input_tensor)
+         return hidden_states
+ 
+ 
